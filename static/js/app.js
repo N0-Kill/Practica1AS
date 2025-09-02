@@ -14,12 +14,28 @@ app.config(function ($routeProvider, $locationProvider) {
 
     $routeProvider
     .when("/", {
-        templateUrl: "app",
+        templateUrl: "/app",
         controller: "appCtrl"
     })
     .when("/productos", {
-        templateUrl: "productos",
+        templateUrl: "/productos",
         controller: "productosCtrl"
+    })
+    .when("/alumnos", {
+        templateUrl: "/alumnos",
+        controller: "alumnosCtrl"
+    })
+    .when("/ventas", {
+        templateUrl: "/ventas",
+        controller: "ventasCtrl"
+    })
+    .when("/reportes", {
+        templateUrl: "/reportes",
+        controller: "reportesCtrl"
+    })
+    .when("/notificaciones", {
+        templateUrl: "/notificaciones",
+        controller: "notificacionesCtrl"
     })
     .otherwise({
         redirectTo: "/"
@@ -67,6 +83,25 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 app.controller("appCtrl", function ($scope, $http) {
 })
 app.controller("productosCtrl", function ($scope, $http) {
+    $(document).on("click", ".btn-ingredientes", function (event) {
+        const id = $(this).data("id")
+
+        $.get(`/productos/ingredientes/${id}`, function (html) {
+            modal(html, "Ingredientes", [
+                {html: "Aceptar", class: "btn btn-secondary", fun: function (event) {
+                    closeModal()
+                }}
+            ])
+        })
+    })
+})
+app.controller("alumnosCtrl", function ($scope, $http) {
+})
+app.controller("ventasCtrl", function ($scope, $http) {
+})
+app.controller("reportesCtrl", function ($scope, $http) {
+})
+app.controller("notificacionesCtrl", function ($scope, $http) {
 })
 
 const DateTime = luxon.DateTime
