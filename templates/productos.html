@@ -1,3 +1,20 @@
+<form id="frmProducto" method="post">
+    <div class="mb-1">
+        <label>Nombre</label>
+        <input type="text" class="form-control" id="txtNombre" name="txtNombre">
+    </div>
+    <div class="mb-1">
+        <label>Precio</label>
+        <input type="text" class="form-control" id="txtPrecio" name="txtPrecio">
+    </div>
+    <div class="mb-1">
+        <label>Existencias</label>
+        <input type="text" class="form-control" id="txtExistencias" name="txtExistencias">
+    </div>
+    <div class="mb-1 text-end">
+        <button class="btn btn-primary">Guardar</button>
+    </div>
+</form>
 <div class="table-responsive">
     <table class="table table-sm">
         <thead class="table-active">
@@ -6,19 +23,9 @@
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Existencias</th>
+                <th></th>
             </tr>
         </thead>
-        <tbody>
-            {% for producto in productos %}
-            <tr>
-                <td>{{ producto.Id_Producto }}</td>
-                <td>{{ producto.Nombre_Producto }}</td>
-                <td>{{ producto.Precio }}</td>
-                <td>{{ producto.Existencias }}</td>
-                <td><button class="btn btn-info btn-ingredientes" data-id="{{ producto.Id_Producto }}">Ver ingredientes...</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
+        <tbody id="tbodyProductos"></tbody>
     </table>
 </div>
-
