@@ -1,8 +1,8 @@
-{% if equipos %}
-  {% for equipo in equipos %}
+{% if integrantes %}
+  {% for integrante in integrantes %}
     <tr>
-      <td>{{ equipo.idEquipo }}</td>
-      <td>{{ equipo.nombreEquipo }}</td>
+      <td>{{ integrante.idIntegrante }}</td>
+      <td>{{ integrante.nombreIntegrante }}</td>
     </tr>
   {% endfor %}
 {% else %}
