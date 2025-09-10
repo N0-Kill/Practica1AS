@@ -21,17 +21,15 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: "/integrantes",
         controller: "integrantesCtrl"
     })
-
-
+    .when("/equipos", {
+        templateUrl: "/equipos",
+        controller: "equiposCtrl"
+    })
 
         
     .when("/equiposintegrantes", {
         templateUrl: "/equiposintegrantes",
         controller: "equiposintegrantesCtrl"
-    })
-    .when("/equipos", {
-        templateUrl: "/equipos",
-        controller: "equiposCtrl"
     })
     .when("/proyectos", {
         templateUrl: "/proyectos",
@@ -175,7 +173,7 @@ app.controller("proyectosCtrl", function ($scope, $http) {
 
 ////////////////////////////////////////////////////////////
 app.controller("equiposCtrl", function ($scope, $http) {
-    function buscarEquiposs() {
+    function buscarEquipos() {
         $.get("/tbodyEquipos", function (trsHTML) {
             $("#tbodyEquipos").html(trsHTML)
         })
@@ -189,9 +187,9 @@ app.controller("equiposCtrl", function ($scope, $http) {
       cluster: 'us2'
     });
 
-    var channel = pusher.subscribe("integranteschannel")
-    channel.bind("integrantesevent", function(data) {
-       buscarIntegrantes()
+    var channel = pusher.subscribe("equiposchannel")
+    channel.bind("equiposevent", function(data) {
+       buscarEquipos()
     })
 
 
@@ -303,4 +301,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
