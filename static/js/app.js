@@ -17,21 +17,30 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: "/app",
         controller: "appCtrl"
     })
-    .when("/productos", {
-        templateUrl: "/productos",
-        controller: "productosCtrl"
+    .when("/integrantes", {
+        templateUrl: "/integrantes",
+        controller: "integrantesCtrl"
     })
 
 
 
-    .when("/decoraciones", {
-        templateUrl: "/decoraciones",
-        controller: "decoracionesCtrl"
+        
+    .when("/equiposintegrantes", {
+        templateUrl: "/equiposintegrantes",
+        controller: "equiposintegrantesCtrl"
     })
-
-
-
-
+    .when("/equipos", {
+        templateUrl: "/equipos",
+        controller: "equiposCtrl"
+    })
+    .when("/proyectos", {
+        templateUrl: "/proyectos",
+        controller: "proyectosCtrl"
+    })
+    .when("/proyectosavances", {
+        templateUrl: "/proyectosavances",
+        controller: "proyectosavancesCtrl"
+    })
     .otherwise({
         redirectTo: "/"
     })
@@ -75,8 +84,97 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     })
 }])
 
+
+///////////////// App Controller
 app.controller("appCtrl", function ($scope, $http) {
+    $("#frmInicioSesion").submit(function (event) {
+        event.preventDefault()
+        $.post("iniciarSesion", $(this).serialize(), function (respuesta) {
+            if (respuesta.length) {
+                window.location = "/#/integrantes"
+                
+                return
+            }
+
+             alert("Usuario y/o Contraseña Incorrecto(s)")
+        })
+    })
 })
+
+
+///////////////// integrantes controller
+app.controller("integrantesCtrl", function ($scope, $http) {
+    function buscarIntegrantes() {
+        $.get("/tbodyIntegrantes", function (trsHTML) {
+            $("#tbodyIntegrantes").html(trsHTML)
+        })
+    }
+
+    buscarIntegrantes()
+    
+    Pusher.logToConsole = true
+
+    var pusher = new Pusher('85576a197a0fb5c211de', {
+      cluster: 'us2'
+    });
+
+    var channel = pusher.subscribe("integranteschannel")
+    channel.bind("integrantesevent", function(data) {
+       buscarIntegrantes()
+    })
+
+
+    $(document).on("submit", "#frmIntegrante", function (event) {
+        event.preventDefault()
+
+        $.post("/integrante", {
+            idIntegrante: "",
+            nombreIntegrante: $("#txtNombreIntegrante").val(),
+        })
+    })
+})
+
+
+///////////////// proyectos controller
+
+app.controller("proyectosCtrl", function ($scope, $http) {
+    function buscarIntegrantes() {
+        $.get("/tbodyProyectos", function (trsHTML) {
+            $("#tbodyProyectos").html(trsHTML)
+        })
+    }
+
+    buscarProyectos()
+    
+    Pusher.logToConsole = true
+
+    var pusher = new Pusher('85576a197a0fb5c211de', {
+      cluster: 'us2'
+    });
+
+    var channel = pusher.subscribe("proyectoschannel")
+    channel.bind("proyectosevent", function(data) {
+       buscarProyectos()
+    })
+
+
+    $(document).on("submit", "#frmProyectos", function (event) {
+        event.preventDefault()
+
+        $.post("/proyecto", {
+            idProyecto: "",
+            NombreProyecto: $("#txtNombreProyecto").val(),
+            Equipo: $("#txtEquipo").val(),
+            Objetivo: $("#txtObjetivo").val(),
+            Estado: $("#txtEstado").val(),
+            
+        })
+    })
+})
+
+
+////////////////////////////////////////////////////////////
+
 app.controller("productosCtrl", function ($scope, $http) {
     function buscarProductos() {
         $.get("/tbodyProductos", function (trsHTML) {
@@ -89,14 +187,13 @@ app.controller("productosCtrl", function ($scope, $http) {
     // Enable pusher logging - don't include this in production
     Pusher.logToConsole = true
 
-    var pusher = new Pusher("e57a8ad0a9dc2e83d9a2", {
-      cluster: "us2"
-    })
+    var pusher = new Pusher('85576a197a0fb5c211de', {
+      cluster: 'us2'
+    });
 
-    var channel = pusher.subscribe("canalProductos")
-    channel.bind("eventoProductos", function(data) {
+    var channel = pusher.subscribe('my-channel');
+    channel.bind('my-event', function(data) {
         // alert(JSON.stringify(data))
-        buscarProductos()
     })
 
     $(document).on("submit", "#frmProducto", function (event) {
@@ -113,8 +210,8 @@ app.controller("productosCtrl", function ($scope, $http) {
     $(document).on("click", ".btn-ingredientes", function (event) {
         const id = $(this).data("id")
 
-        $.get(`/productos/ingredientes/${id}`, function (html) {
-            modal(html, "Ingredientes", [
+        $.get(`/proyectosavances/proyectos/${id}`, function (html) {
+            modal(html, "Proyectos", [
                 {html: "Aceptar", class: "btn btn-secondary", fun: function (event) {
                     closeModal()
                 }}
@@ -122,8 +219,6 @@ app.controller("productosCtrl", function ($scope, $http) {
         })
     })
 })
-
-
 
 app.controller("decoracionesCtrl", function ($scope, $http) {
     function buscarDecoraciones() {
@@ -141,7 +236,7 @@ app.controller("decoracionesCtrl", function ($scope, $http) {
       cluster: "us2"
     })
 
-    var channel = pusher.subscribe("canalDecoraciones")
+    var channel = pusher.subscribe("canalProductos")
     channel.bind("eventoDecoraciones", function(data) {
         // alert(JSON.stringify(data))
         buscarDecoraciones()
@@ -158,7 +253,6 @@ app.controller("decoracionesCtrl", function ($scope, $http) {
         })
     })
 })
-
 
 
 const DateTime = luxon.DateTime
