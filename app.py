@@ -203,7 +203,7 @@ def test_event():
 #////////////////////////////////////////////////////
   
 @app.route("/equipos")
-def productos():
+def equipos():
     return render_template("equipos.html")
 
 
@@ -298,12 +298,6 @@ def guardarEquipo():
 
     pusherEquipos()
     return make_response(jsonify({"mensaje": "Equipo guardado exitosamente"}))
-
-
-@app.route("/test-event")
-def test_event():
-    pusherEquipos()
-    return "Evento disparado"
 
 #////////////////////////////////////////////////////
 
@@ -463,6 +457,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
