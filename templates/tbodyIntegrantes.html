@@ -1,0 +1,12 @@
+{% if equipos %}
+  {% for equipo in equipos %}
+    <tr>
+      <td>{{ equipo.idEquipo }}</td>
+      <td>{{ equipo.nombreEquipo }}</td>
+    </tr>
+  {% endfor %}
+{% else %}
+  <tr>
+    <td colspan="2">No hay registros</td>
+  </tr>
+{% endif %}
