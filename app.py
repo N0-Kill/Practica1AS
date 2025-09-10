@@ -11,7 +11,7 @@ from flask import request
 from flask import jsonify, make_response
 
 import mysql.connector
-
+import pusher
 import datetime
 import pytz
 
@@ -19,26 +19,25 @@ from flask_cors import CORS, cross_origin
 
 con = mysql.connector.connect(
     host="185.232.14.52",
-    database="u760464709_16005339_bd",
-    user="u760464709_16005339_usr",
-    password="/iJRzrJBz+P1"
+    database="u760464709_23005014_bd",
+    user="u760464709_23005014_usr",
+    password="B|7k3UPs3&P"
 )
 
 app = Flask(__name__)
 CORS(app)
 
-def pusherProductos():
-    import pusher
-    
+
+def pusherIntegrantes():
     pusher_client = pusher.Pusher(
-      app_id="2046005",
-      key="e57a8ad0a9dc2e83d9a2",
-      secret="8a116dd9600a3b04a3a0",
-      cluster="us2",
-      ssl=True
+        app_id='2048639',
+        key='85576a197a0fb5c211de',
+        secret='bbd4afc18e15b3760912',
+        cluster='us2',
+        ssl=True
     )
     
-    pusher_client.trigger("canalProductos", "eventoProductos", {"message": "Hola Mundo!"})
+    pusher_client.trigger('integranteschannel', 'integrantesevent', {'message': 'hello world'})
     return make_response(jsonify({}))
 
 @app.route("/")
@@ -54,52 +53,153 @@ def index():
 def app2():
     if not con.is_connected():
         con.reconnect()
-
     con.close()
 
-    return "<h5>Hola, soy la view app</h5>"
+    return render_template("login.html")
+    # return "<h5>Hola, soy la view app</h5>"
 
-@app.route("/productos")
+@app.route("/iniciarSesion", methods=["POST"])
+def iniciarSesion():
+    if not con.is_connected():
+        con.reconnect()
+
+    usuario    = request.form["txtUsuario"].strip()
+    contrasena = request.form["txtContrasena"].strip()
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT IdUsuario
+    FROM usuarios
+    
+    WHERE Nombre = %s 
+    AND Contrasena = %s
+    """
+    val = (usuario, contrasena)
+
+    cursor.execute(sql, val)
+    registros = cursor.fetchall()
+    con.close()
+
+    return make_response(jsonify(registros))
+
+
+
+
+
+@app.route("/integrantes")
 def productos():
-    return render_template("productos.html")
+    return render_template("integrantes.html")
 
 
-@app.route("/tbodyProductos")
+@app.route("/tbodyIntegrantes")
 def tbodyProductos():
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-    SELECT Id_Producto,
-           Nombre_Producto,
-           Precio,
-           Existencias
+    SELECT idIntegrante,
+           nombreIntegrante
 
-    FROM productos
+    FROM integrantes
 
-    ORDER BY Id_Producto DESC
+    ORDER BY idIntegrante DESC
 
     LIMIT 10 OFFSET 0
     """
 
     cursor.execute(sql)
     registros = cursor.fetchall()
+    
+    return render_template("tbodyIntegrantes.html", integrantes=registros)
 
-    # Si manejas fechas y horas
+@app.route("/integrantes/buscar", methods=["GET"])
+def buscarIntegrantes():
+    if not con.is_connected():
+        con.reconnect()
+
+    args     = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT idIntegrante,
+           nombreIntegrante
+
+    FROM integrantes
+
+    WHERE nombreIntegrante LIKE %s
+
+    ORDER BY idIntegrante DESC
+
+    LIMIT 10 OFFSET 0
     """
-    for registro in registros:
-        fecha_hora = registro["Fecha_Hora"]
+    val = (busqueda,)
 
-        registro["Fecha_Hora"] = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-        registro["Fecha"]      = fecha_hora.strftime("%d/%m/%Y")
-        registro["Hora"]       = fecha_hora.strftime("%H:%M:%S")
-    """
+    try:
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
 
-    return render_template("tbodyProductos.html", productos=registros)
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error de programación en MySQL: {error}")
+        registros = []
 
-@app.route("/productos/ingredientes/<int:id>")
-def productosIngredientes(id):
+    finally:
+        con.close()
+
+    return make_response(jsonify(registros))
+
+
+@app.route("/integrante", methods=["POST"])
+def guardarIntegrante():
+    if not con.is_connected():
+        con.reconnect()
+
+    idIntegrante = request.form["idIntegrante"]
+    nombreIntegrante = request.form["nombreIntegrante"]
+
+    cursor = con.cursor()
+
+    if idIntegrante:
+        sql = """
+        UPDATE integrantes
+        SET nombreIntegrante = %s
+        WHERE idIntegrante = %s
+        """
+        val = (nombreIntegrante, idIntegrante)
+    else:
+        sql = """
+        INSERT INTO integrantes (nombreIntegrante)
+        VALUES (%s)
+        """
+        val = (nombreIntegrante,)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    pusherIntegrantes()
+    return make_response(jsonify({"mensaje": "Integrante guardado"}))
+
+
+@app.route("/test-event")
+def test_event():
+    pusherIntegrantes()
+    return "Evento disparado"
+
+
+  
+    
+
+
+
+
+
+
+
+@app.route("/proyectosavances/proyectos/<int:id>")
+def productos2(id):
     if not con.is_connected():
         con.reconnect()
 
@@ -249,3 +349,39 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
