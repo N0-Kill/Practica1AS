@@ -174,6 +174,37 @@ app.controller("proyectosCtrl", function ($scope, $http) {
 
 
 ////////////////////////////////////////////////////////////
+app.controller("equiposCtrl", function ($scope, $http) {
+    function buscarEquiposs() {
+        $.get("/tbodyEquipos", function (trsHTML) {
+            $("#tbodyEquipos").html(trsHTML)
+        })
+    }
+
+    buscarEquipos()
+    
+    Pusher.logToConsole = true
+
+    var pusher = new Pusher('85576a197a0fb5c211de', {
+      cluster: 'us2'
+    });
+
+    var channel = pusher.subscribe("integranteschannel")
+    channel.bind("integrantesevent", function(data) {
+       buscarIntegrantes()
+    })
+
+
+    $(document).on("submit", "#frmEquipo", function (event) {
+        event.preventDefault()
+
+        $.post("/equipo", {
+            idEquipo: "",
+            nombreEquipo: $("#txtEquipoNombre").val(),
+        })
+    })
+})
+///////////////////////////////////////////////////////////
 
 app.controller("productosCtrl", function ($scope, $http) {
     function buscarProductos() {
@@ -272,3 +303,4 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
