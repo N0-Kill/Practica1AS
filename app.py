@@ -42,10 +42,10 @@ def pusherIntegrantes():
 
 def pusherEquipos():
     pusher_client = pusher.Pusher(
-        app_id = "2048639"
-        key = "85576a197a0fb5c211de"
-        secret = "bbd4afc18e15b3760912"
-        cluster = "us2"
+        app_id='2048639',
+        key='85576a197a0fb5c211de',
+        secret='bbd4afc18e15b3760912',
+        cluster='us2',
         ssl=True
     )
     
@@ -361,6 +361,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
