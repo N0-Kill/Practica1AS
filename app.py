@@ -40,6 +40,18 @@ def pusherIntegrantes():
     pusher_client.trigger('integranteschannel', 'integrantesevent', {'message': 'hello world'})
     return make_response(jsonify({}))
 
+def pusherEquipos():
+    pusher_client = pusher.Pusher(
+        app_id = "2046012"
+        key = "d34f1b970d5d6b3236b9"
+        secret = "6f938e99e5fb25d14d85"
+        cluster = "us2"
+        ssl=True
+    )
+    
+    pusher_client.trigger('equiposchannel', 'equiposevent', {'message': 'hello world'})
+    return make_response(jsonify({}))
+
 @app.route("/")
 def index():
     if not con.is_connected():
@@ -349,6 +361,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
