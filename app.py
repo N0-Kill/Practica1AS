@@ -299,6 +299,29 @@ def guardarEquipo():
     pusherEquipos()
     return make_response(jsonify({"mensaje": "Equipo guardado exitosamente"}))
 
+@app.route("/equipo/eliminar", methods=["POST"])
+def eliminarEquipo():
+    if not con.is_connected():
+        con.reconnect()
+
+    id = request.form.get("id")
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    DELETE FROM equipos 
+    WHERE idEquipo = %s
+    """
+    
+    val = (id,)
+    
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    pusherEquipos()
+    return make_response(jsonify({"mensaje": "Equipo Finished"}))
+
+
 #////////////////////////////////////////////////////
 
 
@@ -457,6 +480,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
