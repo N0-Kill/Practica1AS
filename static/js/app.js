@@ -202,6 +202,19 @@ app.controller("equiposCtrl", function ($scope, $http) {
         })
     })
 })
+
+ $(document).on("click", ".btnEliminarEquipo", function () {
+        const id = $(this).data("id")
+
+        if (confirm("¿Seguro que quieres eliminar este Equipo?")) {
+        $.post("/equipo/eliminar", { id: id }, function () {
+            // Elimina la fila del DOM
+            $(`button[data-id='${id}']`).closest("tr").remove()
+        }).fail(function () {
+            alert("Error al eliminar el Team")
+        })
+    }
+})
 ///////////////////////////////////////////////////////////
 
 app.controller("productosCtrl", function ($scope, $http) {
@@ -301,5 +314,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
