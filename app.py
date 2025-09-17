@@ -9,6 +9,7 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import jsonify, make_response
+from equipos_service import equipos_bp 
 
 import mysql.connector
 import pusher
@@ -27,6 +28,7 @@ con = mysql.connector.connect(
 app = Flask(__name__)
 CORS(app)
 
+app.register_blueprint(equipos_bp)
 
 def pusherIntegrantes():
     pusher_client = pusher.Pusher(
@@ -200,130 +202,6 @@ def test_event():
     pusherIntegrantes()
     return "Evento disparado"
 
-#////////////////////////////////////////////////////
-  
-@app.route("/equipos")
-def equipos():
-    return render_template("equipos.html")
-
-
-@app.route("/tbodyEquipos")
-def tbodyEquipos():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT idEquipo,
-           nombreEquipo
-
-    FROM equipos
-
-    ORDER BY idEquipo DESC
-
-    LIMIT 10 OFFSET 0
-    """
-
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-    
-    return render_template("tbodyEquipos.html", equipos=registros)
-
-
-@app.route("/equipos/buscar", methods=["GET"])
-def buscarEquios():
-    if not con.is_connected():
-        con.reconnect()
-
-    args     = request.args
-    busqueda = args["busqueda"]
-    busqueda = f"%{busqueda}%"
-
-    cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT idEquipo,
-           nombreEquipo
-
-    FROM equipos
-
-    WHERE nombreEquipo LIKE %s
-
-    ORDER BY idEquipo DESC
-
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda,)
-
-    try:
-        cursor.execute(sql, val)
-        registros = cursor.fetchall()
-
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error de programación en MySQL: {error}")
-        registros = []
-
-    finally:
-        con.close()
-
-    return make_response(jsonify(registros))
-
-
-@app.route("/equipo", methods=["POST"])
-def guardarEquipo():
-    if not con.is_connected():
-        con.reconnect()
-
-    idEquipo = request.form["idEquipo"]
-    nombreEquipo = request.form["nombreEquipo"]
-
-    cursor = con.cursor()
-
-    if idEquipo:
-        sql = """
-        UPDATE equipos
-        SET nombreEquipo = %s
-        WHERE idEquipo = %s
-        """
-        val = (nombreEquipo, idEquipo)
-    else:
-        sql = """
-        INSERT INTO equipos (nombreEquipo)
-        VALUES (%s)
-        """
-        val = (nombreEquipo,)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    pusherEquipos()
-    return make_response(jsonify({"mensaje": "Equipo guardado exitosamente"}))
-
-@app.route("/equipo/eliminar", methods=["POST"])
-def eliminarEquipo():
-    if not con.is_connected():
-        con.reconnect()
-
-    id = request.form.get("id")
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    DELETE FROM equipos 
-    WHERE idEquipo = %s
-    """
-    
-    val = (id,)
-    
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    pusherEquipos()
-    return make_response(jsonify({"mensaje": "Equipo Finished"}))
-
-
-#////////////////////////////////////////////////////
-
 
 
 
@@ -481,44 +359,5 @@ def eliminarProducto():
 
     return make_response(jsonify({}))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
