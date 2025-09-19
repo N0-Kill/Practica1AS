@@ -300,7 +300,7 @@ app.controller("equiposintegrantesCtrl", function ($scope, $http) {
 });
 
 // Eliminar integrante-equipo
-$(document).on("click", ".btnEliminarIntegranteEquipo", function () {
+$(document).on("click", ".btnEliminarEquipoIntegrante", function () {
     const id = $(this).data("id");
 
     if (confirm("¿Seguro que quieres eliminar este registro?")) {
@@ -411,6 +411,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
