@@ -319,13 +319,13 @@ def guardarEquiposIntegrantes():
         UPDATE equiposintegrantes
         SET idEquipo = %s,
             idIntegrante = %s,
-            fechaHora = NOW()
+            fechaUnion = NOW()
         WHERE idEquipoIntegrante = %s
         """
         val = (idEquipo, idIntegrante, idEquipoIntegrante)
     else:
         sql = """
-        INSERT INTO equiposintegrantes (idEquipo, idIntegrante, fechaHora)
+        INSERT INTO equiposintegrantes (idEquipo, idIntegrante, fechaUnion)
         VALUES (%s, %s, NOW())
         """
         val = (idEquipo, idIntegrante)
@@ -398,6 +398,7 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
 
 
 
