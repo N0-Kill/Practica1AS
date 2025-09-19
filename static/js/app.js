@@ -249,8 +249,8 @@ app.controller("equiposintegrantesCtrl", function ($scope, $http) {
 
     // Buscar equipos-integrantes
     function buscarEquiposIntegrantes() {
-        $.get("/tbodyequiposintegrantes", function (trsHTML) {
-            $("#tbodyequiposintegrantes").html(trsHTML);
+        $.get("/tbodyEquiposIntegrantes", function (trsHTML) {
+            $("#tbodyEquiposIntegrantes").html(trsHTML);
         }).fail(function () {
             console.log("Error al cargar equipos-integrantes");
         });
@@ -285,7 +285,7 @@ app.controller("equiposintegrantesCtrl", function ($scope, $http) {
             return;
         }
 
-        $.post("/integranteequipo", {
+        $.post("/equiposintegrantes", {
             idEquipoIntegrante: "",
             idEquipo: idEquipo,
             idIntegrante: idIntegrante
@@ -411,6 +411,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
