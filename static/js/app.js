@@ -304,7 +304,7 @@ $(document).on("click", ".btnEliminarEquipoIntegrante", function () {
     const id = $(this).data("id");
 
     if (confirm("¿Seguro que quieres eliminar este registro?")) {
-        $.post("/equipointegrante/eliminar", { id: id }, function () {
+        $.post("/equiposintegrantes/eliminar", { id: id }, function () {
             $(`button[data-id='${id}']`).closest("tr").remove();
         }).fail(function () {
             alert("Error al eliminar el registro");
@@ -411,6 +411,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
