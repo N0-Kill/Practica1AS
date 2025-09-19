@@ -267,10 +267,7 @@ def tbodyEquiposIntegrantes():
     cursor.close()
     conn.close()
     return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=registros)
-        except Exception as e:
-        print(f"Error en tbodyEquiposIntegrantes: {str(e)}")  # ✅ Ver error exacto
-        return f"Error interno: {str(e)}", 500
-
+    
 @app.route("/equiposintegrantes/buscar", methods=["GET"])
 def buscarEquiposIntegrantes():
     if not con.is_connected():
@@ -401,6 +398,7 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
 
 
 
