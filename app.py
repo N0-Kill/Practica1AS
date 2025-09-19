@@ -246,7 +246,7 @@ def equiposintegrantes():
 def tbodyEquiposIntegrantes():
     if not con.is_connected():
         con.reconnect()
-       cursor = con.cursor(dictionary=True)
+    cursor = con.cursor(dictionary=True)
     
         sql = """
             SELECT 
@@ -398,13 +398,3 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
-
-
-
-
-
-
-
-
-
