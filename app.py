@@ -245,7 +245,7 @@ def equiposintegrantes():
 @app.route("/tbodyEquiposIntegrantes")
 def tbodyEquiposIntegrantes():
     if not con.is_connected():
-        conn = get_db()
+        conn = reconect()
         cursor = conn.cursor(dictionary=True)
     
         sql = """
@@ -266,7 +266,6 @@ def tbodyEquiposIntegrantes():
         registros = cursor.fetchall()
     
         cursor.close()
-        conn.close()
         return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=registros)
     
 @app.route("/equiposintegrantes/buscar", methods=["GET"])
@@ -399,6 +398,7 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
 
 
 
