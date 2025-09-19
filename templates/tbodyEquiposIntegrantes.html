@@ -2,12 +2,11 @@
   {% for equipointegrante in equiposintegrantes %}
     <tr>
       <td>{{ equipointegrante.idEquipoIntegrante  }}</td>
-      <td>{{ equipointegrante.idEquipo }}</td>
-      <td>{{ equipointegrante.idIntegrante }}</td>
       <td>{{ equipointegrante.nombreEquipo }}</td>
+      <td>{{ equipointegrante.noombreIntegrante }}</td>
        <td>{{ equipointegrante.fechaUnion }}</td>
       <td>
-        <button class="btn btn-danger btn-end btnEliminarEquipoIntegrante" data-id="{{ equipointegrante.idEquipo }}">
+        <button class="btn btn-danger btn-end btnEliminarEquipoIntegrante" data-id="{{ equipointegrante.idEquipoIntegrante }}">
           Eliminar
         </button>
       </td>
