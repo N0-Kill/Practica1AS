@@ -261,11 +261,11 @@ def tbodyEquiposIntegrantes():
         LIMIT 10 OFFSET 0
     """
     cursor.execute(sql)
-    data = cursor.fetchall()
+    registros = cursor.fetchall()
 
     cursor.close()
     conn.close()
-    return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=data)
+    return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=registros)
 
 @app.route("/equiposintegrantes/buscar", methods=["GET"])
 def buscarEquiposIntegrantes():
@@ -291,16 +291,16 @@ def buscarEquiposIntegrantes():
 
     try:
         cursor.execute(sql, val)
-        data = cursor.fetchall()
+        registros = cursor.fetchall()
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
-        data = []
+        registros = []
 
     finally:
         con.close()
 
-    return make_response(jsonify(data))
+    return make_response(jsonify(registros))
 
 @app.route("/equiposintegrantes", methods=["POST"])
 def guardarEquiposIntegrantes():
@@ -397,5 +397,6 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
 
 
