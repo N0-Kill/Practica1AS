@@ -267,6 +267,41 @@ def tbodyEquiposIntegrantes():
     conn.close()
     return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=data)
 
+@app.route("/equiposintegrantes/buscar", methods=["GET"])
+def buscarEquiposIntegrantes():
+    if not con.is_connected():
+        con.reconnect()
+
+    args     = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+
+    SELECT ei.idEquipoIntegrante, e.nombreEquipo, i.nombreIntegrante
+    FROM equiposintegrantes ei
+    INNER JOIN equipos e ON e.idEquipo = ei.idEquipo
+    INNER JOIN integrantes i ON i.idIntegrante = ei.idIntegrante
+    ORDER BY ei.idEquipoIntegrante DESC
+    LIMIT 10 OFFSET 0
+    
+    """
+    val = (busqueda,)
+
+    try:
+        cursor.execute(sql, val)
+        data = cursor.fetchall()
+
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error de programación en MySQL: {error}")
+        data = []
+
+    finally:
+        con.close()
+
+    return make_response(jsonify(data))
+
 @app.route("/equiposintegrantes", methods=["POST"])
 def guardarEquiposIntegrantes():
     if not con.is_connected():
@@ -362,4 +397,5 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
 
