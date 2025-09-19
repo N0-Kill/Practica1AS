@@ -248,25 +248,25 @@ def tbodyEquiposIntegrantes():
         con.reconnect()
     cursor = con.cursor(dictionary=True)
     
-        sql = """
-            SELECT 
-                    ei.idEquipoIntegrante,
-                    e.nombreEquipo,
-                    i.nombreIntegrante,
-                    ei.fechaUnion
-            FROM equiposintegrantes ei
-            INNER JOIN equipos e 
-                    ON e.idEquipo = ei.idEquipo
-            INNER JOIN integrantes i 
-                    ON i.idIntegrante = ei.idIntegrante
-            ORDER BY ei.idEquipoIntegrante DESC
-            LIMIT 10 OFFSET 0
-        """
-        cursor.execute(sql)
-        registros = cursor.fetchall()
-    
-        cursor.close()
-        return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=registros)
+    sql = """
+        SELECT 
+                ei.idEquipoIntegrante,
+                e.nombreEquipo,
+                i.nombreIntegrante,
+                ei.fechaUnion
+        FROM equiposintegrantes ei
+        INNER JOIN equipos e 
+                ON e.idEquipo = ei.idEquipo
+        INNER JOIN integrantes i 
+                ON i.idIntegrante = ei.idIntegrante
+        ORDER BY ei.idEquipoIntegrante DESC
+        LIMIT 10 OFFSET 0
+    """
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+
+    cursor.close()
+    return render_template("tbodyEquiposIntegrantes.html", equiposintegrantes=registros)
     
 @app.route("/equiposintegrantes/buscar", methods=["GET"])
 def buscarEquiposIntegrantes():
@@ -398,3 +398,4 @@ def cargarIntegrantes():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
