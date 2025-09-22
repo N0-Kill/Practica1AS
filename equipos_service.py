@@ -3,6 +3,24 @@ from flask import Blueprint, request, jsonify, render_template, make_response
 import mysql.connector
 import pusher
 
+# Configurar conexión local de este microservicio
+def get_connection():
+    return mysql.connector.connect(
+        host="185.232.14.52",
+        database="u760464709_23005014_bd",
+        user="u760464709_23005014_usr",
+        password="B|7k3UPs3&P"
+    )
+
+# Pusher (compartido, pero aquí lo tienes solo para equipos)
+pusher_client = pusher.Pusher(
+    app_id='2048639',
+    key='85576a197a0fb5c211de',
+    secret='bbd4afc18e15b3760912',
+    cluster='us2',
+    ssl=True
+)
+
 # Usamos Blueprint para aislar rutas
 equipos_bp = Blueprint("equipos_bp", __name__)
 
