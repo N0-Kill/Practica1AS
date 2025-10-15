@@ -174,17 +174,16 @@ app.controller("proyectosCtrl", function ($scope, $http) {
 ////////////////////////////////////////////////////////////
 app.controller("equiposCtrl", function ($scope, $http) {
 
-    // 🔹 Función para cargar los equipos
+    // 🔹 Cargar equipos
     function buscarEquipos() {
         $.get("/tbodyEquipos", function (trsHTML) {
             $("#tbodyEquipos").html(trsHTML)
         })
     }
 
-    // Cargar equipos al entrar
     buscarEquipos()
 
-    // 🔹 Configuración de Pusher para refrescar la tabla en tiempo real
+    // 🔹 Configurar Pusher
     Pusher.logToConsole = true
     var pusher = new Pusher('85576a197a0fb5c211de', { cluster: 'us2' })
     var channel = pusher.subscribe("equiposchannel")
@@ -194,54 +193,37 @@ app.controller("equiposCtrl", function ($scope, $http) {
     })
 
 
-    // 🔹 Modo edición: detecta si se está editando un equipo
-    let modoEdicion = false
-    let idEquipoEditar = null
-
-
-    // 🔹 Evento submit del formulario (crear o actualizar)
+    // 🔹 Guardar o actualizar
     $(document).on("submit", "#frmEquipo", function (event) {
         event.preventDefault()
 
+        const id = $("#idEquipo").val()
         const nombre = $("#txtEquipoNombre").val().trim()
+
         if (!nombre) {
             alert("Por favor ingresa un nombre de equipo.")
             return
         }
 
-        // Si está en modo edición → actualizar
-        if (modoEdicion) {
-            $.post("/equipo", {
-                idEquipo: idEquipoEditar,
-                nombreEquipo: nombre,
-            }).done(function (res) {
-                alert("Equipo actualizado correctamente.")
-                modoEdicion = false
-                idEquipoEditar = null
-                $("#txtEquipoNombre").val("")
-                $("#btnGuardar").text("Guardar")
-            })
-        } 
-        // Si no → insertar nuevo
-        else {
-            $.post("/equipo", {
-                idEquipo: "",
-                nombreEquipo: nombre,
-            }).done(function (res) {
-                alert("Equipo guardado correctamente.")
-                $("#txtEquipoNombre").val("")
-            })
-        }
+        $.post("/equipo", { idEquipo: id, nombreEquipo: nombre })
+        .done(function (res) {
+            alert(res.mensaje)
+            $("#idEquipo").val("") // limpiar id
+            $("#txtEquipoNombre").val("") // limpiar nombre
+            $("#btnGuardar").text("Guardar")
+        })
+        .fail(function () {
+            alert("Error al guardar el equipo")
+        })
     })
 
 
-    // 🔹 Evento para eliminar
+    // 🔹 Eliminar equipo
     $(document).on("click", ".btnEliminarEquipo", function () {
         const id = $(this).data("id")
 
         if (confirm("¿Seguro que quieres eliminar este equipo?")) {
             $.post("/equipo/eliminar", { id: id }, function () {
-                // Elimina la fila del DOM (opcional)
                 $(`button[data-id='${id}']`).closest("tr").remove()
             }).fail(function () {
                 alert("Error al eliminar el equipo")
@@ -250,17 +232,14 @@ app.controller("equiposCtrl", function ($scope, $http) {
     })
 
 
-    // 🔹 Evento para editar (nuevo)
+    // 🔹 Editar equipo
     $(document).on("click", ".btnEditarEquipo", function () {
         const id = $(this).data("id")
         const nombre = $(this).data("nombre")
 
+        $("#idEquipo").val(id)
         $("#txtEquipoNombre").val(nombre)
         $("#btnGuardar").text("Actualizar")
-
-        // Activar modo edición
-        modoEdicion = true
-        idEquipoEditar = id
     })
 
 })
@@ -459,6 +438,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
