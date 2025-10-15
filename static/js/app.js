@@ -173,49 +173,97 @@ app.controller("proyectosCtrl", function ($scope, $http) {
 
 ////////////////////////////////////////////////////////////
 app.controller("equiposCtrl", function ($scope, $http) {
+
+    // 🔹 Función para cargar los equipos
     function buscarEquipos() {
         $.get("/tbodyEquipos", function (trsHTML) {
             $("#tbodyEquipos").html(trsHTML)
         })
     }
 
+    // Cargar equipos al entrar
     buscarEquipos()
-    
+
+    // 🔹 Configuración de Pusher para refrescar la tabla en tiempo real
     Pusher.logToConsole = true
-
-    var pusher = new Pusher('85576a197a0fb5c211de', {
-      cluster: 'us2'
-    });
-
+    var pusher = new Pusher('85576a197a0fb5c211de', { cluster: 'us2' })
     var channel = pusher.subscribe("equiposchannel")
+
     channel.bind("equiposevent", function(data) {
-       buscarEquipos()
+        buscarEquipos()
     })
 
 
+    // 🔹 Modo edición: detecta si se está editando un equipo
+    let modoEdicion = false
+    let idEquipoEditar = null
+
+
+    // 🔹 Evento submit del formulario (crear o actualizar)
     $(document).on("submit", "#frmEquipo", function (event) {
         event.preventDefault()
 
-        $.post("/equipo", {
-            idEquipo: "",
-            nombreEquipo: $("#txtEquipoNombre").val(),
-        })
-    })
-})
+        const nombre = $("#txtEquipoNombre").val().trim()
+        if (!nombre) {
+            alert("Por favor ingresa un nombre de equipo.")
+            return
+        }
 
- $(document).on("click", ".btnEliminarEquipo", function () {
+        // Si está en modo edición → actualizar
+        if (modoEdicion) {
+            $.post("/equipo", {
+                idEquipo: idEquipoEditar,
+                nombreEquipo: nombre,
+            }).done(function (res) {
+                alert("Equipo actualizado correctamente.")
+                modoEdicion = false
+                idEquipoEditar = null
+                $("#txtEquipoNombre").val("")
+                $("#btnGuardar").text("Guardar")
+            })
+        } 
+        // Si no → insertar nuevo
+        else {
+            $.post("/equipo", {
+                idEquipo: "",
+                nombreEquipo: nombre,
+            }).done(function (res) {
+                alert("Equipo guardado correctamente.")
+                $("#txtEquipoNombre").val("")
+            })
+        }
+    })
+
+
+    // 🔹 Evento para eliminar
+    $(document).on("click", ".btnEliminarEquipo", function () {
         const id = $(this).data("id")
 
-        if (confirm("¿Seguro que quieres eliminar este Equipo?")) {
-        $.post("/equipo/eliminar", { id: id }, function () {
-            // Elimina la fila del DOM
-            $(`button[data-id='${id}']`).closest("tr").remove()
-        }).fail(function () {
-            alert("Error al eliminar el Team")
-        })
-    }
-})
+        if (confirm("¿Seguro que quieres eliminar este equipo?")) {
+            $.post("/equipo/eliminar", { id: id }, function () {
+                // Elimina la fila del DOM (opcional)
+                $(`button[data-id='${id}']`).closest("tr").remove()
+            }).fail(function () {
+                alert("Error al eliminar el equipo")
+            })
+        }
+    })
 
+
+    // 🔹 Evento para editar (nuevo)
+    $(document).on("click", ".btnEditarEquipo", function () {
+        const id = $(this).data("id")
+        const nombre = $(this).data("nombre")
+
+        $("#txtEquipoNombre").val(nombre)
+        $("#btnGuardar").text("Actualizar")
+
+        // Activar modo edición
+        modoEdicion = true
+        idEquipoEditar = id
+    })
+
+})
 /////////////////////////////////// equiposIntegrantes
 
 app.controller("equiposintegrantesCtrl", function ($scope, $http) {
@@ -411,6 +459,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
